@@ -1,0 +1,33 @@
+{
+  "name": "unmask",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reveal hidden Unicode, zero-width characters, homoglyphs, and smuggled AI instructions in pasted text.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Charlie Krug",
+  "homepage": "https://github.com/ctkrug/unmask",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ctkrug/unmask.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ctkrug/unmask/issues"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vite": "^5.2.0",
+    "vitest": "^1.5.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
