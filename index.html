@@ -21,7 +21,38 @@
     <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <header>
+        <h1 class="wordmark">un<span>mask</span></h1>
+        <p class="pitch">
+          Paste any text, skill file, or MCP tool description. Unmask decodes zero-width
+          characters, bidi overrides, Unicode tag smuggling, and homoglyphs — the hidden
+          Unicode a human can't see, but a model will read.
+        </p>
+      </header>
+
+      <main class="light-table">
+        <section class="pane" aria-label="What you see">
+          <h2>What you see</h2>
+          <textarea
+            id="input-area"
+            placeholder="Paste text here to scan it for hidden Unicode…"
+            aria-label="Text to scan"
+          ></textarea>
+          <div class="toolbar">
+            <button id="scan-btn" type="button">Scan</button>
+            <button id="sanitize-btn" type="button" class="secondary">Copy sanitized</button>
+            <span id="summary" class="summary" role="status" aria-live="polite"></span>
+          </div>
+        </section>
+
+        <section class="pane" aria-label="What the model sees">
+          <h2>What the model sees</h2>
+          <div id="decoded" class="decoded" aria-live="polite"></div>
+          <ul id="findings-list" class="findings-list"></ul>
+        </section>
+      </main>
+    </div>
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>
