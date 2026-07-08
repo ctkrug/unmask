@@ -26,9 +26,11 @@ the "instrument, not toy" register the security/analysis category calls for.
 | `--surface-2` | `#201a38` | raised panels, cards, the findings rail |
 | `--text` | `#ede9fb` | primary text — pale lavender-white |
 | `--text-muted` | `#948aad` | secondary text, captions, labels |
-| `--accent` | `#a742ff` | UV violet — primary interactive color, focus rings, links |
+| `--accent` | `#a742ff` | UV violet — primary interactive color, focus rings, links, borders/glows |
+| `--accent-text` | `#c17dff` | lightened `--accent` for body text on tinted dark surfaces (WCAG AA) |
 | `--ink` | `#6dffb8` | acid-glow green — "revealed hidden character" highlight color |
-| `--danger` | `#ff3d71` | flagged instruction / injection payload |
+| `--danger` | `#ff3d71` | flagged instruction / injection payload — borders/glows/backgrounds |
+| `--danger-text` | `#ff7096` | lightened `--danger` for body text on tinted dark surfaces (WCAG AA) |
 | `--success` | `#39e6c8` | clean / sanitized confirmation |
 | type — display | **Space Grotesk** (Google Fonts), system fallback `ui-sans-serif, system-ui` | wordmark, headings |
 | type — UI/body | **IBM Plex Mono** (Google Fonts), system fallback `ui-monospace, SFMono-Regular, Menlo, monospace` | body copy, textarea, findings list, buttons |
@@ -36,6 +38,11 @@ the "instrument, not toy" register the security/analysis category calls for.
 | corner radius | `10px` panels, `6px` controls | consistent soft-technical edges |
 | shadow/glow | `0 0 0 1px rgba(167,66,255,.15), 0 8px 30px rgba(167,66,255,.08)` ambient violet glow on raised surfaces; flagged findings get a tighter `0 0 12px rgba(255,61,113,.5)` pulse | depth without flatness |
 | motion | UI transitions 150–220ms ease-out; a finding "developing" (fading in from transparent to lit) animates 400ms ease-out once per scan | feedback without noise |
+
+`--accent`/`--danger` are the borders/glows/decorative tokens; use the `-text` variants for any
+actual text set directly on a panel surface (verified with axe-core — the base tokens read fine
+as glows but fall short of WCAG AA as body text on the tinted, glow-composited panel
+backgrounds).
 
 Monospace as the *body* font (not just code) is deliberate: this tool's entire subject is
 individual characters, so fixed-width type lets every glyph — visible or revealed — line up in
