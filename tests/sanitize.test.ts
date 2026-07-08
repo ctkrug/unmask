@@ -30,4 +30,11 @@ describe("sanitize", () => {
     const cleaned = sanitize(dirty);
     expect(scan(cleaned).isClean).toBe(true);
   });
+
+  it("folds a confusable sitting directly next to a stripped character without shifting it", () => {
+    // The zero-width space right after the confusable 'а' is a boundary case:
+    // stripping it must not disturb the fold applied to its neighbor.
+    const text = "pа​ypal.com";
+    expect(sanitize(text)).toBe("paypal.com");
+  });
 });
