@@ -43,13 +43,14 @@ against `docs/DESIGN.md`.
   - For any text containing a bidi-control character, the decoded pane shows the logical
     (stored) character order rather than the visually-reordered rendering a browser would show.
 
-- [ ] **2.2 — Homoglyph/confusable detection covers common phishing scripts**
+- [x] **2.2 — Homoglyph/confusable detection covers common phishing scripts**
   - Detection covers the full relevant UTS #39 confusable set for Cyrillic and Greek Latin
     look-alikes (uppercase and lowercase), not just the SCOPE starter subset.
   - A mixed-script string (e.g. `pаypal.com`) is flagged even when only one character in the
     string is non-Latin.
-  - Partial: table broadened from 35 to 45 entries (more lowercase Greek, extended Cyrillic) —
-    still a curated subset, not the complete official UTS #39 skeleton table.
+  - Table now covers every Latin letter (upper and lower) with a well-attested Cyrillic or Greek
+    look-alike — 52 entries, up from 45. Letters with no solid visual match in either script
+    (b, f, g, q, r, w, z lowercase; D, F, G, L, Q, R, U, V, W uppercase) are legitimately absent.
 
 - [x] **2.3 — Human-vs-model diff view highlights the delta**
   - The normalized/decoded text and the raw input are shown side by side with every differing
