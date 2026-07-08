@@ -120,8 +120,8 @@ npm install
 npm run dev        # vite dev server
 npm test           # vitest run
 npm run coverage   # vitest run --coverage, gated at 85%
-npm run build      # tsc --noEmit && vite build -> dist/
-npm run preview    # serve the dist/ build locally
+npm run build      # tsc --noEmit && vite build -> site/
+npm run preview    # serve the site/ build locally
 ```
 
 `vite.config.ts` sets `base: "./"` so every built asset reference is relative — required because
