@@ -1,9 +1,26 @@
 import { describe, expect, it } from "vitest";
-import { detectConfusables, foldConfusables } from "../src/lib/confusables";
+import { CONFUSABLE_CODE_POINTS, detectConfusables, foldConfusables } from "../src/lib/confusables";
 
 describe("detectConfusables", () => {
   it("finds nothing in plain ASCII text", () => {
     expect(detectConfusables("paypal.com")).toEqual([]);
+  });
+
+  it("detects and folds every table entry individually", () => {
+    for (const [cp, { looksLike, script }] of Object.entries(CONFUSABLE_CODE_POINTS)) {
+      const char = String.fromCodePoint(Number(cp));
+      const findings = detectConfusables(`x${char}y`);
+      expect(findings, `U+${Number(cp).toString(16)} (${script} "${char}")`).toHaveLength(1);
+      expect(findings[0].reason).toContain(`"${looksLike}"`);
+      expect(foldConfusables(char)).toBe(looksLike);
+    }
+  });
+
+  it("every table entry maps to a single ASCII letter from a real script name", () => {
+    for (const { looksLike, script } of Object.values(CONFUSABLE_CODE_POINTS)) {
+      expect(looksLike).toMatch(/^[a-zA-Z]$/);
+      expect(["Cyrillic", "Greek"]).toContain(script);
+    }
   });
 
   it("flags a Cyrillic 'а' hiding inside an otherwise-Latin word", () => {

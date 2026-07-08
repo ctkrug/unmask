@@ -9,7 +9,7 @@ import { Finding, toCodePointLabel } from "./types";
  * match in either script (b, f, g, q, r, w, z lowercase; D, F, G, L, Q, R,
  * U, V, W uppercase) are legitimately absent rather than a coverage gap.
  */
-const CONFUSABLE_CODE_POINTS: Record<number, { looksLike: string; script: string }> = {
+export const CONFUSABLE_CODE_POINTS: Record<number, { looksLike: string; script: string }> = {
   0x0430: { looksLike: "a", script: "Cyrillic" },
   0x0441: { looksLike: "c", script: "Cyrillic" },
   0x0435: { looksLike: "e", script: "Cyrillic" },
