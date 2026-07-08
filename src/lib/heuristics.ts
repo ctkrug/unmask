@@ -8,6 +8,7 @@ const INJECTION_PHRASES = [
   "ignore previous",
   "ignore all previous",
   "ignore the above",
+  "ignore your instructions",
   "disregard the above",
   "disregard previous",
   "system prompt",
@@ -17,6 +18,13 @@ const INJECTION_PHRASES = [
   "act as",
   "do not follow",
   "forget your instructions",
+  "pretend you are",
+  "pretend to be",
+  "developer mode",
+  "jailbreak",
+  "bypass your",
+  "reveal your instructions",
+  "print your system prompt",
 ];
 
 /** Returns every known injection phrase found (case-insensitively) inside the decoded payload. */
