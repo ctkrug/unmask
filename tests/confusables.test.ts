@@ -26,6 +26,23 @@ describe("detectConfusables", () => {
     expect(findings[0].name).toBe('Greek "Α"');
     expect(findings[1].name).toBe('Greek "ο"');
   });
+
+  it("flags lowercase Greek letters beyond the starter subset", () => {
+    const iota = String.fromCodePoint(0x03b9);
+    const kappa = String.fromCodePoint(0x03ba);
+    const findings = detectConfusables(`${iota}${kappa}`);
+    expect(findings.map((f) => f.reason)).toEqual([
+      expect.stringContaining('"i"'),
+      expect.stringContaining('"k"'),
+    ]);
+  });
+
+  it("flags Cyrillic letters beyond the starter subset", () => {
+    const dze = String.fromCodePoint(0x0405);
+    const findings = detectConfusables(dze);
+    expect(findings[0].reason).toMatch(/Cyrillic/);
+    expect(findings[0].reason).toMatch(/"S"/);
+  });
 });
 
 describe("foldConfusables", () => {
