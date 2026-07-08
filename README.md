@@ -52,9 +52,11 @@ runtime.
 
 ```sh
 npm install
-npm run dev       # local dev server
-npm test          # run the test suite
-npm run build     # production build to dist/
+npm run dev        # local dev server
+npm test           # run the test suite
+npm run coverage   # run the test suite with a coverage report
+npm run typecheck  # type-check without emitting
+npm run build      # production build to dist/
 ```
 
 ## Status
