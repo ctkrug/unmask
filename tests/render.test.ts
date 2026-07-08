@@ -145,4 +145,13 @@ describe("renderFindingsRailHtml", () => {
     expect(html).toContain('data-finding-index="1"');
     expect((html.match(/chip chip--zero-width/g) ?? []).length).toBe(2);
   });
+
+  it("renders the correct chip class for every category in a mixed-finding scan", () => {
+    const text = `invoice-‮ pаypal ${String.fromCodePoint(0xe0068)} b`;
+    const result = scan(text);
+    const html = renderFindingsRailHtml(result.findings);
+    expect(html).toContain("chip chip--bidi-control");
+    expect(html).toContain("chip chip--confusable");
+    expect(html).toContain("chip chip--tag-character");
+  });
 });
