@@ -22,21 +22,25 @@ same bytes sees every word.
 Unmask exists to close that gap: it's a magnifying glass built for the character encodings that
 matter to language models, not just the ones that matter to human eyes.
 
-## Planned features
+## Features
 
 - **Zero-width & invisible character detection** — zero-width space/joiner/non-joiner, word
-  joiners, soft hyphens, and other characters that render as nothing.
+  joiners, soft hyphens, deprecated formatting controls, and other characters that render as
+  nothing.
 - **Unicode tag character decoding** — reveals payloads smuggled in the `U+E0000`–`U+E007F`
-  "tag" block (the same trick used to hide text behind emoji).
+  "tag" block (the same trick used to hide text behind emoji), shown explicitly as a decoded
+  hidden-payload value and checked against common prompt-injection phrases.
 - **Bidi-override detection** — flags `RLO`/`LRO`/`PDF` and related control characters used to
   visually reorder text so it reads differently than it's stored.
 - **Homoglyph / confusable detection** — flags look-alike characters from other scripts (e.g.
-  Cyrillic `а` standing in for Latin `a`) using Unicode confusable-skeleton folding.
-- **Human-vs-model diff view** — a side-by-side comparison of the rendered text and the fully
-  decoded/normalized text a model would actually process.
-- **Per-finding explainer** — plain-language description of what each flagged character is and
-  why it's suspicious.
+  Cyrillic `а` standing in for Latin `a`) across a broadened Cyrillic/Greek table.
+- **Two-pane light table** — "what you see" (the raw text, with hidden characters marked
+  directly on top of it) side by side with "what the model sees" (fully decoded), linked by a
+  clickable findings rail.
+- **Per-finding explainer** — plain-language name, Unicode code point, and reason for every flag.
 - **One-click sanitize** — strip or normalize every flagged character and copy the cleaned text.
+- **File upload / drag-and-drop** — audit a whole `.md`/`.txt`/`.json` file, not just pasted text.
+- **Shareable report export** — copy a plain-text scan report for sharing outside the tool.
 
 ## Stack
 
@@ -55,8 +59,9 @@ npm run build     # production build to dist/
 
 ## Status
 
-Early scaffold — see [`docs/VISION.md`](docs/VISION.md) for the product vision and
-[`docs/BACKLOG.md`](docs/BACKLOG.md) for the build plan.
+Core detectors, sanitize, and the two-pane UI are functionally complete. See
+[`docs/VISION.md`](docs/VISION.md) for the product vision, [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+for a map of the codebase, and [`docs/BACKLOG.md`](docs/BACKLOG.md) for what's left.
 
 ## License
 
