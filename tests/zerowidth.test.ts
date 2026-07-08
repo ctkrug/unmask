@@ -33,4 +33,30 @@ describe("detectZeroWidth", () => {
     const findings = detectZeroWidth("‌");
     expect(findings[0].reason).toMatch(/renders as nothing/);
   });
+
+  it("flags deprecated formatting and interlinear-annotation characters", () => {
+    const activateSwapping = String.fromCodePoint(0x206b);
+    const deprecatedFormatting = detectZeroWidth(`a${activateSwapping}b`);
+    expect(deprecatedFormatting[0].name).toBe("Activate Symmetric Swapping");
+
+    const anchor = String.fromCodePoint(0xfff9);
+    const terminator = String.fromCodePoint(0xfffb);
+    const interlinear = detectZeroWidth(`a${anchor}hidden${terminator}b`);
+    expect(interlinear.map((f) => f.name)).toEqual([
+      "Interlinear Annotation Anchor",
+      "Interlinear Annotation Terminator",
+    ]);
+  });
+
+  it("flags Hangul and Mongolian filler characters", () => {
+    const hangulFiller = String.fromCodePoint(0x3164);
+    const halfwidthHangulFiller = String.fromCodePoint(0xffa0);
+    const mongolianFvs1 = String.fromCodePoint(0x180b);
+    const findings = detectZeroWidth(`${hangulFiller}${halfwidthHangulFiller}${mongolianFvs1}`);
+    expect(findings.map((f) => f.name)).toEqual([
+      "Hangul Filler",
+      "Halfwidth Hangul Filler",
+      "Mongolian Free Variation Selector One",
+    ]);
+  });
 });
