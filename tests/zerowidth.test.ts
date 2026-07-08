@@ -1,9 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { detectZeroWidth } from "../src/lib/zerowidth";
+import { ZERO_WIDTH_CHARS, detectZeroWidth } from "../src/lib/zerowidth";
 
 describe("detectZeroWidth", () => {
   it("finds nothing in plain ASCII text", () => {
     expect(detectZeroWidth("hello world")).toEqual([]);
+  });
+
+  it("flags every entry in its own zero-width table, individually", () => {
+    for (const [char, name] of Object.entries(ZERO_WIDTH_CHARS)) {
+      const findings = detectZeroWidth(`x${char}y`);
+      expect(findings, `"${name}"`).toHaveLength(1);
+      expect(findings[0].name).toBe(name);
+      expect(findings[0].index).toBe(1);
+    }
   });
 
   it("flags a zero width space hidden inside a word", () => {
