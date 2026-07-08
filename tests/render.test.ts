@@ -95,6 +95,13 @@ describe("renderSummaryHtml", () => {
     expect(html).toContain("1</strong> hidden character found");
     expect(html).toContain("1 zero-width");
   });
+
+  it("pluralizes the summary when more than one finding is present", () => {
+    const text = "a​b​c";
+    const result = scan(text);
+    const html = renderSummaryHtml(text, result);
+    expect(html).toContain("2</strong> hidden characters found");
+  });
 });
 
 describe("renderFindingsRailHtml", () => {
