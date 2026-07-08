@@ -23,7 +23,13 @@
   <body>
     <div id="app">
       <header>
-        <h1 class="wordmark">un<span>mask</span></h1>
+        <h1 class="wordmark" aria-label="unmask">
+          <span class="glyph">u</span><span class="glyph">n</span><span
+            class="glyph glyph--ghost"
+            >m</span
+          ><span class="glyph glyph--ghost">a</span><span class="glyph glyph--ghost">s</span
+          ><span class="glyph">k</span>
+        </h1>
         <p class="pitch">
           Paste any text, skill file, or MCP tool description. Unmask decodes zero-width
           characters, bidi overrides, Unicode tag smuggling, and homoglyphs — the hidden
@@ -32,24 +38,45 @@
       </header>
 
       <main class="light-table">
-        <section class="pane" aria-label="What you see">
+        <section class="pane pane--input" aria-label="What you see">
           <h2>What you see</h2>
-          <textarea
-            id="input-area"
-            placeholder="Paste text here to scan it for hidden Unicode…"
-            aria-label="Text to scan"
-          ></textarea>
+          <div class="editor">
+            <div id="overlay" class="overlay" aria-hidden="true"></div>
+            <textarea
+              id="input-area"
+              class="input-area"
+              placeholder="Paste text here to scan it for hidden Unicode…"
+              aria-label="Text to scan"
+              spellcheck="false"
+            ></textarea>
+          </div>
+          <p id="file-error" class="file-error" role="alert" hidden></p>
           <div class="toolbar">
-            <button id="scan-btn" type="button">Scan</button>
-            <button id="sanitize-btn" type="button" class="secondary">Copy sanitized</button>
+            <button id="sanitize-btn" type="button">Copy sanitized</button>
+            <button id="upload-btn" type="button" class="secondary">Upload file</button>
+            <input
+              id="file-input"
+              class="visually-hidden"
+              type="file"
+              accept=".md,.txt,.json,text/plain,application/json,text/markdown"
+            />
             <span id="summary" class="summary" role="status" aria-live="polite"></span>
           </div>
         </section>
 
-        <section class="pane" aria-label="What the model sees">
+        <nav id="findings-rail" class="findings-rail" aria-label="Findings"></nav>
+
+        <section class="pane pane--decoded" aria-label="What the model sees">
           <h2>What the model sees</h2>
           <div id="decoded" class="decoded" aria-live="polite"></div>
-          <ul id="findings-list" class="findings-list"></ul>
+          <div id="hidden-payload" class="hidden-payload" hidden>
+            <h3>Hidden payload decoded</h3>
+            <p id="hidden-payload-text" class="hidden-payload-text"></p>
+            <p id="hidden-payload-heuristic" class="hidden-payload-heuristic" hidden></p>
+          </div>
+          <div class="toolbar">
+            <button id="report-btn" type="button" class="secondary">Copy report</button>
+          </div>
         </section>
       </main>
     </div>
