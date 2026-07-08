@@ -1,85 +1,181 @@
+import { buildReportText } from "./lib/report";
+import { detectInjectionHeuristics } from "./lib/heuristics";
+import {
+  renderDecodedHtml,
+  renderFindingsRailHtml,
+  renderOverlayHtml,
+  renderSummaryHtml,
+} from "./lib/render";
 import { sanitize } from "./lib/sanitize";
 import { scan, ScanResult } from "./lib/scan";
-import { Finding } from "./lib/types";
 import "./style.css";
 
 const inputArea = document.querySelector<HTMLTextAreaElement>("#input-area")!;
-const scanBtn = document.querySelector<HTMLButtonElement>("#scan-btn")!;
+const overlay = document.querySelector<HTMLElement>("#overlay")!;
+const editor = document.querySelector<HTMLElement>(".editor")!;
 const sanitizeBtn = document.querySelector<HTMLButtonElement>("#sanitize-btn")!;
+const reportBtn = document.querySelector<HTMLButtonElement>("#report-btn")!;
+const uploadBtn = document.querySelector<HTMLButtonElement>("#upload-btn")!;
+const fileInput = document.querySelector<HTMLInputElement>("#file-input")!;
+const fileErrorEl = document.querySelector<HTMLElement>("#file-error")!;
 const summaryEl = document.querySelector<HTMLElement>("#summary")!;
 const decodedEl = document.querySelector<HTMLElement>("#decoded")!;
-const findingsListEl = document.querySelector<HTMLUListElement>("#findings-list")!;
+const findingsRailEl = document.querySelector<HTMLElement>("#findings-rail")!;
+const hiddenPayloadEl = document.querySelector<HTMLElement>("#hidden-payload")!;
+const hiddenPayloadTextEl = document.querySelector<HTMLElement>("#hidden-payload-text")!;
+const hiddenPayloadHeuristicEl = document.querySelector<HTMLElement>(
+  "#hidden-payload-heuristic",
+)!;
 
-const CATEGORY_LABEL: Record<Finding["category"], string> = {
-  "zero-width": "zero-width",
-  "bidi-control": "bidi override",
-  "tag-character": "hidden tag char",
-  confusable: "homoglyph",
-};
+const MAX_FILE_BYTES = 1024 * 1024;
+const ACCEPTED_EXTENSIONS = [".md", ".txt", ".json"];
 
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function renderDecoded(text: string, findings: Finding[]): string {
-  const findingByIndex = new Map(findings.map((f) => [f.index, f]));
-  let html = "";
-  let index = 0;
-  for (const char of text) {
-    const finding = findingByIndex.get(index);
-    if (finding) {
-      const visible =
-        finding.category === "confusable" ? escapeHtml(char) : `[${finding.codePoint}]`;
-      html += `<span class="finding finding--${finding.category}" title="${escapeHtml(finding.reason)}">${visible}</span>`;
-    } else {
-      html += escapeHtml(char);
-    }
-    index += char.length;
+/**
+ * Clipboard access can reject (denied permission, insecure context, no user
+ * gesture) independently of whether the underlying action — sanitizing the
+ * input, building the report — already succeeded. Swallowing that specific
+ * failure keeps the visual confirmation honest about the part that matters.
+ */
+async function copyToClipboard(text: string): Promise<void> {
+  if (!navigator.clipboard) return;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    // Best-effort only; the caller's own action already completed.
   }
-  return html;
 }
 
-function renderSummary(result: ScanResult): string {
-  if (result.isClean) return "Looks clean — no hidden characters found.";
-  const parts = Object.entries(result.counts)
-    .filter(([, count]) => count > 0)
-    .map(([category, count]) => `${count} ${CATEGORY_LABEL[category as Finding["category"]]}`);
-  return `<strong>${result.findings.length}</strong> hidden character${result.findings.length === 1 ? "" : "s"} found — ${parts.join(", ")}.`;
+function syncOverlayScroll(): void {
+  overlay.scrollTop = inputArea.scrollTop;
+  overlay.scrollLeft = inputArea.scrollLeft;
 }
 
-function renderFindingsList(findings: Finding[]): string {
-  return findings
-    .map(
-      (f) =>
-        `<li><span class="name">${escapeHtml(f.name)}</span> — <span class="reason">${escapeHtml(f.reason)}</span></li>`,
-    )
-    .join("");
+function renderHiddenPayload(result: ScanResult): void {
+  if (!result.hiddenPayload) {
+    hiddenPayloadEl.hidden = true;
+    return;
+  }
+  hiddenPayloadEl.hidden = false;
+  hiddenPayloadTextEl.textContent = `"${result.hiddenPayload}"`;
+  const matches = detectInjectionHeuristics(result.hiddenPayload);
+  if (matches.length > 0) {
+    hiddenPayloadHeuristicEl.hidden = false;
+    hiddenPayloadHeuristicEl.textContent = `Matches known prompt-injection heuristic(s): ${matches
+      .map((m) => `"${m}"`)
+      .join(", ")}`;
+  } else {
+    hiddenPayloadHeuristicEl.hidden = true;
+  }
 }
 
 function runScan(): ScanResult {
   const text = inputArea.value;
   const result = scan(text);
-  decodedEl.innerHTML = renderDecoded(text, result.findings);
-  summaryEl.innerHTML = renderSummary(result);
-  findingsListEl.innerHTML = renderFindingsList(result.findings);
+  overlay.innerHTML = renderOverlayHtml(text, result.findings);
+  syncOverlayScroll();
+  decodedEl.innerHTML = renderDecodedHtml(text, result.findings);
+  summaryEl.innerHTML = renderSummaryHtml(text, result);
+  findingsRailEl.innerHTML = renderFindingsRailHtml(result.findings);
+  renderHiddenPayload(result);
   return result;
 }
 
-scanBtn.addEventListener("click", runScan);
 inputArea.addEventListener("input", runScan);
+inputArea.addEventListener("scroll", syncOverlayScroll);
+window.addEventListener("resize", syncOverlayScroll);
 
 sanitizeBtn.addEventListener("click", async () => {
   const cleaned = sanitize(inputArea.value);
   inputArea.value = cleaned;
   runScan();
-  if (navigator.clipboard) {
-    await navigator.clipboard.writeText(cleaned);
-  }
+  await copyToClipboard(cleaned);
   sanitizeBtn.classList.add("flash-success");
-  setTimeout(() => sanitizeBtn.classList.remove("flash-success"), 140);
+  setTimeout(() => sanitizeBtn.classList.remove("flash-success"), 150);
+});
+
+reportBtn.addEventListener("click", async () => {
+  const report = buildReportText(scan(inputArea.value));
+  await copyToClipboard(report);
+  reportBtn.classList.add("flash-success");
+  setTimeout(() => reportBtn.classList.remove("flash-success"), 150);
+});
+
+function showFileError(message: string): void {
+  fileErrorEl.textContent = message;
+  fileErrorEl.hidden = false;
+}
+
+function clearFileError(): void {
+  fileErrorEl.hidden = true;
+  fileErrorEl.textContent = "";
+}
+
+function hasAcceptedExtension(name: string): boolean {
+  const lower = name.toLowerCase();
+  return ACCEPTED_EXTENSIONS.some((ext) => lower.endsWith(ext));
+}
+
+async function loadFile(file: File): Promise<void> {
+  clearFileError();
+  if (!hasAcceptedExtension(file.name)) {
+    showFileError(`"${file.name}" isn't a .md, .txt, or .json file.`);
+    return;
+  }
+  if (file.size > MAX_FILE_BYTES) {
+    showFileError(
+      `"${file.name}" is ${(file.size / (1024 * 1024)).toFixed(1)}MB — the limit is 1MB.`,
+    );
+    return;
+  }
+  try {
+    const text = await file.text();
+    inputArea.value = text;
+    runScan();
+  } catch {
+    showFileError(`Couldn't read "${file.name}" — it may be corrupted or unreadable.`);
+  }
+}
+
+uploadBtn.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files?.[0];
+  if (file) void loadFile(file);
+  fileInput.value = "";
+});
+
+editor.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  editor.classList.add("dragover");
+});
+editor.addEventListener("dragleave", () => editor.classList.remove("dragover"));
+editor.addEventListener("drop", (event) => {
+  event.preventDefault();
+  editor.classList.remove("dragover");
+  const file = event.dataTransfer?.files?.[0];
+  if (file) void loadFile(file);
+});
+
+findingsRailEl.addEventListener("click", (event) => {
+  const chip = (event.target as HTMLElement).closest<HTMLElement>("[data-finding-index]");
+  if (!chip) return;
+  const index = chip.dataset.findingIndex;
+  const overlayMark = overlay.querySelector<HTMLElement>(`[data-finding-index="${index}"]`);
+  const decodedMark = decodedEl.querySelector<HTMLElement>(`[data-finding-index="${index}"]`);
+
+  // The overlay isn't independently scrollable (it mirrors the real
+  // textarea's scroll position), so scroll inputArea itself and let the
+  // existing "scroll" listener carry the overlay along with it.
+  if (overlayMark) {
+    inputArea.scrollTop = Math.max(0, overlayMark.offsetTop - inputArea.clientHeight / 2);
+    syncOverlayScroll();
+    overlayMark.classList.add("mark--target");
+    setTimeout(() => overlayMark.classList.remove("mark--target"), 900);
+  }
+  if (decodedMark) {
+    decodedMark.scrollIntoView({ block: "center", behavior: "smooth" });
+    decodedMark.classList.add("finding--target");
+    setTimeout(() => decodedMark.classList.remove("finding--target"), 900);
+  }
 });
 
 // Seed a demo so the wow moment is visible the instant the page loads.
