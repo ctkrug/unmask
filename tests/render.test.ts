@@ -94,6 +94,15 @@ describe("renderOverlayHtml", () => {
       'a<span class="mark mark--zero-width" data-finding-index="0" title="Zero Width Space">​</span>b',
     );
   });
+
+  it("wraps a supplementary-plane tag character as one span in the overlay too", () => {
+    const tagChar = String.fromCodePoint(0xe0068);
+    const text = `hi${tagChar}`;
+    const result = scan(text);
+    const html = renderOverlayHtml(text, result.findings);
+    expect((html.match(/class="mark mark--tag-character"/g) ?? []).length).toBe(1);
+    expect(html).toContain(`>${tagChar}</span>`);
+  });
 });
 
 describe("renderSummaryHtml", () => {
