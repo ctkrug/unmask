@@ -30,6 +30,14 @@ describe("renderDecodedHtml", () => {
     expect(renderDecodedHtml("hello", [])).toBe("hello");
   });
 
+  it("escapes a script-tag injection attempt pasted alongside a real finding", () => {
+    const text = "<script>alert(1)</script>hel​lo";
+    const result = scan(text);
+    const html = renderDecodedHtml(text, result.findings);
+    expect(html).not.toContain("<script>");
+    expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
+  });
+
   it("replaces an invisible finding with its bracketed code-point label", () => {
     const text = "a​b";
     const result = scan(text);
@@ -50,6 +58,13 @@ describe("renderDecodedHtml", () => {
 describe("renderOverlayHtml", () => {
   it("passes plain ASCII text through untouched", () => {
     expect(renderOverlayHtml("hello", [])).toBe("hello");
+  });
+
+  it("escapes an HTML injection attempt pasted into the overlay pane", () => {
+    const text = "<img src=x onerror=alert(1)>";
+    const html = renderOverlayHtml(text, []);
+    expect(html).not.toContain("<img");
+    expect(html).toBe("&lt;img src=x onerror=alert(1)&gt;");
   });
 
   it("keeps the raw (possibly zero-width) character inside the marker span", () => {
