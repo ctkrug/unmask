@@ -33,7 +33,15 @@ body {
 }
 
 body {
-  background: radial-gradient(ellipse at top, #140b26 0%, var(--bg) 60%);
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(167, 66, 255, 0.02) 0px,
+      rgba(167, 66, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(ellipse at top, #140b26 0%, var(--bg) 60%);
   color: var(--text);
   font-family: var(--font-ui);
   line-height: 1.5;
