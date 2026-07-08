@@ -41,4 +41,28 @@ describe("scan", () => {
     const result = scan(text);
     expect(result.findings.map((f) => f.index)).toEqual([1, 3]);
   });
+
+  it("scans a 1MB paste (the upload size limit) in well under a second", () => {
+    const dirty = "hel​lo pаypal.com invoice-‮gnp.exe ".repeat(20000);
+    const start = performance.now();
+    const result = scan(dirty);
+    const elapsed = performance.now() - start;
+    expect(result.isClean).toBe(false);
+    expect(elapsed).toBeLessThan(1000);
+  });
+
+  it("does not throw on a lone unpaired surrogate", () => {
+    const loneHighSurrogate = "a\uD83Db";
+    expect(() => scan(loneHighSurrogate)).not.toThrow();
+    expect(scan(loneHighSurrogate).isClean).toBe(true);
+  });
+
+  it("concatenates decoded tag-character segments across a cancel tag with no separator", () => {
+    const cancelTag = String.fromCodePoint(0xe007f);
+    const toTag = (s: string) =>
+      [...s].map((c) => String.fromCodePoint(0xe0000 + c.codePointAt(0)!)).join("");
+    const text = `${toTag("hello")}${cancelTag}${toTag("world")}`;
+    const result = scan(text);
+    expect(result.hiddenPayload).toBe("helloworld");
+  });
 });
