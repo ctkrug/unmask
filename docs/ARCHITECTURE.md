@@ -101,12 +101,25 @@ generation it was started at and discards its result if a newer load has since s
 `String.fromCodePoint(...)` over pasting literal invisible/confusable glyphs into test source,
 matching the same rationale as the detector tables themselves.
 
+`tests/properties.test.ts` runs fast-check property tests over the full Unicode range (the
+`{unit: "grapheme"}` string generator, which includes supplementary-plane code points) rather
+than hand-picked examples — e.g. `scan(sanitize(text)).isClean` holds for any input, not just
+the ones a human thought to paste. The zerowidth/bidi/confusables tables also each get an
+exhaustive per-entry test (loop every code point the module claims to cover), separate from the
+example-based tests, so a future edit that silently drops or breaks one entry can't hide behind
+the handful of examples already written.
+
+`npm run coverage` runs the suite with v8 coverage, scoped to `src/lib` (main.ts is excluded —
+see the pure/impure split above) with an 85%-lines/branches/functions/statements threshold
+enforced in CI.
+
 ## Build / run
 
 ```sh
 npm install
 npm run dev        # vite dev server
 npm test           # vitest run
+npm run coverage   # vitest run --coverage, gated at 85%
 npm run build      # tsc --noEmit && vite build -> dist/
 npm run preview    # serve the dist/ build locally
 ```
