@@ -5,7 +5,9 @@ import { defineConfig } from "vite";
 export default defineConfig({
   base: "./",
   build: {
-    outDir: "dist",
+    // Emit to site/ so the built static output is exactly what gets served
+    // from apps.charliekrug.com/unmask/ (the deploy serves site_build_dir).
+    outDir: "site",
     target: "es2020",
   },
 });
