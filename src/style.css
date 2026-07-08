@@ -178,16 +178,26 @@ body {
   animation: reveal 400ms ease-out;
 }
 
-.finding--zero-width,
-.finding--tag-character {
+.finding--zero-width {
   color: var(--ink);
   text-shadow: 0 0 8px rgba(109, 255, 184, 0.6);
+}
+
+.finding--tag-character {
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(167, 66, 255, 0.6);
 }
 
 .finding--bidi-control,
 .finding--confusable {
   color: var(--danger);
   text-shadow: 0 0 8px rgba(255, 61, 113, 0.6);
+}
+
+.finding--target {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-radius: 2px;
 }
 
 @keyframes reveal {
@@ -203,6 +213,153 @@ body {
   .finding {
     animation: none;
   }
+}
+
+/*
+ * Overlay markers on the raw input pane. Zero-width categories keep their
+ * span content zero-width and rely on a ::after tick anchored to the span's
+ * position so the marker never shifts surrounding text out of alignment
+ * with the textarea underneath. Confusables have real width, so they're
+ * highlighted directly.
+ */
+.mark {
+  position: relative;
+}
+
+.mark--zero-width::after,
+.mark--tag-character::after,
+.mark--bidi-control::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  border-radius: 1px;
+}
+
+.mark--zero-width::after {
+  background: var(--ink);
+  box-shadow: 0 0 6px var(--ink);
+}
+
+.mark--tag-character::after {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+
+.mark--bidi-control::after {
+  background: var(--danger);
+  box-shadow: 0 0 6px var(--danger);
+}
+
+.mark--confusable {
+  color: var(--danger);
+  background: rgba(255, 61, 113, 0.25);
+  text-shadow: 0 0 6px rgba(255, 61, 113, 0.6);
+  border-radius: 2px;
+}
+
+.mark--target::after {
+  filter: drop-shadow(0 0 6px var(--accent));
+}
+
+.mark--confusable.mark--target {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.findings-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  padding: var(--space-1) 0;
+}
+
+.rail-empty {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: var(--space-1);
+}
+
+@media (max-width: 1100px) {
+  .findings-rail {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+}
+
+.chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  min-height: 44px;
+  background: var(--surface-2);
+  border: 1px solid rgba(167, 66, 255, 0.2);
+  border-left: 3px solid var(--ink);
+  border-radius: var(--radius-control);
+  padding: 6px 8px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform var(--transition),
+    background var(--transition),
+    border-color var(--transition);
+}
+
+@media (max-width: 1100px) {
+  .chip {
+    width: auto;
+    min-width: 130px;
+    flex: 0 0 auto;
+  }
+}
+
+.chip:hover {
+  background: var(--surface-1);
+  transform: translateX(2px);
+}
+
+.chip:active {
+  transform: scale(0.97) translateX(2px);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.chip--zero-width {
+  border-left-color: var(--ink);
+}
+
+.chip--tag-character {
+  border-left-color: var(--accent);
+}
+
+.chip--bidi-control,
+.chip--confusable {
+  border-left-color: var(--danger);
+}
+
+.chip-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-code {
+  color: var(--text-muted);
 }
 
 .toolbar {
