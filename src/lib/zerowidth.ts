@@ -14,6 +14,11 @@ import { Finding, toCodePointLabel } from "./types";
 const ZERO_WIDTH_CODE_POINTS: Record<number, string> = {
   0x00ad: "Soft Hyphen",
   0x034f: "Combining Grapheme Joiner",
+  0x115f: "Hangul Choseong Filler",
+  0x1160: "Hangul Jungseong Filler",
+  0x180b: "Mongolian Free Variation Selector One",
+  0x180c: "Mongolian Free Variation Selector Two",
+  0x180d: "Mongolian Free Variation Selector Three",
   0x180e: "Mongolian Vowel Separator",
   0x200b: "Zero Width Space",
   0x200c: "Zero Width Non-Joiner",
@@ -23,7 +28,18 @@ const ZERO_WIDTH_CODE_POINTS: Record<number, string> = {
   0x2062: "Invisible Times",
   0x2063: "Invisible Separator",
   0x2064: "Invisible Plus",
+  0x206a: "Inhibit Symmetric Swapping",
+  0x206b: "Activate Symmetric Swapping",
+  0x206c: "Inhibit Arabic Form Shaping",
+  0x206d: "Activate Arabic Form Shaping",
+  0x206e: "National Digit Shapes",
+  0x206f: "Nominal Digit Shapes",
+  0x3164: "Hangul Filler",
   0xfeff: "Zero Width No-Break Space (BOM)",
+  0xfff9: "Interlinear Annotation Anchor",
+  0xfffa: "Interlinear Annotation Separator",
+  0xfffb: "Interlinear Annotation Terminator",
+  0xffa0: "Halfwidth Hangul Filler",
 };
 
 export const ZERO_WIDTH_CHARS: Record<string, string> = Object.fromEntries(
