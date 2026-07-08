@@ -65,8 +65,60 @@ body {
   color: var(--text);
 }
 
-.wordmark span {
+.glyph {
+  display: inline-block;
+  color: var(--text);
+}
+
+.glyph:nth-child(n + 3) {
   color: var(--accent);
+}
+
+.glyph--ghost {
+  animation: glyph-settle 640ms ease-out both;
+}
+
+.glyph:nth-child(3) {
+  animation-delay: 30ms;
+}
+
+.glyph:nth-child(4) {
+  animation-delay: 60ms;
+}
+
+.glyph:nth-child(5) {
+  animation-delay: 90ms;
+}
+
+@keyframes glyph-settle {
+  0% {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(-3px);
+    color: var(--ink);
+    text-shadow: 0 0 10px var(--ink);
+  }
+  70% {
+    color: var(--accent);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+    color: var(--accent);
+    text-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glyph--ghost {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
+    color: var(--accent);
+    text-shadow: none;
+  }
 }
 
 .pitch {
