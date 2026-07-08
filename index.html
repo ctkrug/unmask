@@ -3,11 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unmask — reveal hidden Unicode and smuggled AI instructions</title>
+    <title>Unmask — Reveal the hidden Unicode an LLM reads</title>
     <meta
       name="description"
-      content="Paste any text, skill file, or MCP tool description and instantly see the hidden Unicode, zero-width characters, homoglyphs, and smuggled AI instructions a human can't see — but a model will read."
+      content="Paste any text, skill file, or MCP tool description and see the zero-width characters, bidi overrides, invisible Unicode tag payloads, and homoglyphs a person can't see but a language model reads in full. Runs entirely in your browser."
     />
+    <meta property="og:title" content="Unmask — Reveal the hidden Unicode an LLM reads" />
+    <meta
+      property="og:description"
+      content="See the zero-width characters, bidi overrides, invisible tag payloads, and homoglyphs hiding in any prompt, skill file, or MCP tool description. Fully client-side."
+    />
+    <meta property="og:type" content="website" />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0714'/%3E%3Cpath d='M16 34c4-12 12-18 16-18s12 6 16 18c-4 12-12 18-16 18s-12-6-16-18z' fill='none' stroke='%23a742ff' stroke-width='3'/%3E%3Ccircle cx='32' cy='34' r='6' fill='%236dffb8'/%3E%3C/svg%3E"
@@ -23,19 +29,28 @@
   <body>
     <div id="app">
       <header>
-        <h1 class="wordmark" aria-label="unmask">
-          <span aria-hidden="true">
-            <span class="glyph">u</span><span class="glyph">n</span><span
-              class="glyph glyph--ghost"
-              >m</span
-            ><span class="glyph glyph--ghost">a</span><span class="glyph glyph--ghost">s</span
-            ><span class="glyph">k</span>
-          </span>
-        </h1>
+        <div class="topbar">
+          <h1 class="wordmark" aria-label="unmask">
+            <span aria-hidden="true">
+              <span class="glyph">u</span><span class="glyph">n</span><span
+                class="glyph glyph--ghost"
+                >m</span
+              ><span class="glyph glyph--ghost">a</span><span class="glyph glyph--ghost">s</span
+              ><span class="glyph">k</span>
+            </span>
+          </h1>
+          <a
+            class="gh-link"
+            href="https://github.com/ctkrug/unmask"
+            target="_blank"
+            rel="noopener"
+            >View on GitHub</a
+          >
+        </div>
         <p class="pitch">
           Paste any text, skill file, or MCP tool description. Unmask decodes zero-width
-          characters, bidi overrides, Unicode tag smuggling, and homoglyphs — the hidden
-          Unicode a human can't see, but a model will read.
+          characters, bidi overrides, Unicode tag smuggling, and homoglyphs: the hidden
+          Unicode you can't see, but a model reads in full.
         </p>
       </header>
 
@@ -84,6 +99,78 @@
         </section>
       </main>
     </div>
+
+    <section class="about" aria-label="About Unmask">
+      <h2>What Unmask checks for</h2>
+      <p>
+        Unmask is a browser tool that reveals the Unicode characters hiding in text a language
+        model will read but a person cannot see. Paste a prompt, a skill file, an MCP tool
+        description, or any block of text, and it scans every character against four kinds of
+        hidden content.
+      </p>
+      <p>
+        Zero-width and invisible characters render as nothing on screen but still count as real
+        characters to a tokenizer. Bidirectional override controls reorder how a line displays
+        without changing the order stored on disk, so a sentence can read one way to you and
+        another way to the model. Unicode tag characters, the invisible block originally meant
+        for language tags on emoji flags, can carry a full ASCII sentence that never appears on
+        screen. Homoglyphs are letters borrowed from Cyrillic or Greek that look identical to
+        Latin letters but are different code points, the trick behind look-alike domain names.
+      </p>
+      <p>
+        Everything runs in your browser. Nothing you paste is uploaded, logged, or sent to a
+        server, which matters when the text you are checking is a private prompt or an internal
+        tool definition. The left pane shows the raw text with each hidden character marked in
+        place. The right pane shows what the model actually receives, with every invisible
+        character spelled out as its code point. A findings list links the two, and one button
+        strips the hidden characters and copies a clean version back to your clipboard.
+      </p>
+      <p>
+        To use it, paste text or drop a .md, .txt, or .json file into the left pane, read the
+        findings list to see what was caught and why, then click Copy sanitized for a cleaned
+        copy or Copy report for a plain-text audit you can share.
+      </p>
+
+      <h2>FAQ</h2>
+      <dl class="faq">
+        <dt>Does Unmask send my text anywhere?</dt>
+        <dd>
+          No. Every scan runs locally in your browser with no network calls. You can open the
+          page, disconnect from the internet, and it still works.
+        </dd>
+        <dt>What can I check?</dt>
+        <dd>
+          Paste any text directly, or upload a .md, .txt, or .json file up to 1MB. Skill files,
+          MCP tool descriptions, and shared prompts are the common cases.
+        </dd>
+        <dt>What does sanitize actually remove?</dt>
+        <dd>
+          It deletes zero-width, bidi-control, and Unicode tag characters outright, and folds
+          homoglyphs back to the Latin letter they imitate. The visible words stay; the hidden
+          channel is gone.
+        </dd>
+        <dt>Is this a security guarantee?</dt>
+        <dd>
+          No. Unmask flags known hidden-character tricks and common injection phrases as a review
+          aid. It is a magnifying glass, not a firewall, so treat it as one input to your own
+          judgment.
+        </dd>
+      </dl>
+    </section>
+
+    <footer class="site-footer">
+      <a
+        class="footer-cta"
+        href="https://github.com/ctkrug/unmask"
+        target="_blank"
+        rel="noopener"
+        >View the source on GitHub</a
+      >
+      <a class="footer-portfolio" href="https://apps.charliekrug.com" rel="noopener"
+        >More by Charlie Krug → apps.charliekrug.com</a
+      >
+    </footer>
+
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>
