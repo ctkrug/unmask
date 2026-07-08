@@ -82,6 +82,18 @@ just uses `scrollIntoView`. Both matched elements get a brief `.mark--target` /
 clipboard permission is independent of whether the underlying action (sanitize, report) already
 succeeded, so a rejection must not suppress the success-flash confirmation.
 
+**Live-scan performance**: `scan()` cost is roughly linear in input length (~0.5ms/KB
+measured), so the `input` listener schedules `runScan()` through `requestAnimationFrame` rather
+than calling it directly — a burst of "input" events faster than one frame (key-mashing, a fast
+paste) collapses into a single scan+render instead of queueing one per event. The direct calls
+from the sanitize button, the report button, and file loads stay synchronous (deliberate one-shot
+actions, not a rapid-fire stream).
+
+**File load races**: `loadFile()` in `main.ts` is guarded by a generation counter. Drop file A,
+then drop file B before A's `file.text()` resolves, and A can finish reading *after* B — without
+the guard the stale A write would land last and clobber B's newer content. Each call records the
+generation it was started at and discards its result if a newer load has since started.
+
 ## Testing
 
 `npm test` runs Vitest over `tests/*.test.ts`, one file per `src/lib/` module, environment
