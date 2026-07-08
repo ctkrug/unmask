@@ -53,6 +53,25 @@ describe("renderDecodedHtml", () => {
     expect(html).toContain(">а<");
     expect(html).not.toContain("[U+0430]");
   });
+
+  it("labels a bidi-control finding with its own bracketed code point", () => {
+    const text = "invoice-‮gnp.exe";
+    const result = scan(text);
+    const html = renderDecodedHtml(text, result.findings);
+    expect(html).toContain('class="finding finding--bidi-control"');
+    expect(html).toContain("[U+202E]");
+  });
+
+  it("wraps a supplementary-plane tag character as one span, not a split surrogate pair", () => {
+    const text = `hi${String.fromCodePoint(0xe0068)}`;
+    const result = scan(text);
+    const html = renderDecodedHtml(text, result.findings);
+    expect(html).toContain('class="finding finding--tag-character"');
+    expect(html).toContain("[U+E0068]");
+    // A naive UTF-16-unit walk would split the surrogate pair into two spans;
+    // there must be exactly one.
+    expect((html.match(/class="finding finding--tag-character"/g) ?? []).length).toBe(1);
+  });
 });
 
 describe("renderOverlayHtml", () => {
