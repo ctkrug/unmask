@@ -128,6 +128,11 @@ function hasAcceptedExtension(name: string): boolean {
   return ACCEPTED_EXTENSIONS.some((ext) => lower.endsWith(ext));
 }
 
+// Guards against a second drop/upload resolving before an in-flight one: if
+// the user drops file A then quickly drops file B, only the load that was
+// started most recently is allowed to land in the textarea.
+let loadGeneration = 0;
+
 async function loadFile(file: File): Promise<void> {
   clearFileError();
   if (!hasAcceptedExtension(file.name)) {
@@ -140,11 +145,14 @@ async function loadFile(file: File): Promise<void> {
     );
     return;
   }
+  const generation = ++loadGeneration;
   try {
     const text = await file.text();
+    if (generation !== loadGeneration) return;
     inputArea.value = text;
     runScan();
   } catch {
+    if (generation !== loadGeneration) return;
     showFileError(`Couldn't read "${file.name}" — it may be corrupted or unreadable.`);
   }
 }
