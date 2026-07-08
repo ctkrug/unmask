@@ -21,6 +21,9 @@ const CONFUSABLE_CODE_POINTS: Record<number, { looksLike: string; script: string
   0x0455: { looksLike: "s", script: "Cyrillic" },
   0x0445: { looksLike: "x", script: "Cyrillic" },
   0x0443: { looksLike: "y", script: "Cyrillic" },
+  0x04bb: { looksLike: "h", script: "Cyrillic" },
+  0x0501: { looksLike: "d", script: "Cyrillic" },
+  0x04cf: { looksLike: "l", script: "Cyrillic" },
   0x0410: { looksLike: "A", script: "Cyrillic" },
   0x0412: { looksLike: "B", script: "Cyrillic" },
   0x0415: { looksLike: "E", script: "Cyrillic" },
@@ -32,6 +35,8 @@ const CONFUSABLE_CODE_POINTS: Record<number, { looksLike: string; script: string
   0x0421: { looksLike: "C", script: "Cyrillic" },
   0x0422: { looksLike: "T", script: "Cyrillic" },
   0x0425: { looksLike: "X", script: "Cyrillic" },
+  0x0405: { looksLike: "S", script: "Cyrillic" },
+  0x0406: { looksLike: "I", script: "Cyrillic" },
   0x0391: { looksLike: "A", script: "Greek" },
   0x0392: { looksLike: "B", script: "Greek" },
   0x0395: { looksLike: "E", script: "Greek" },
@@ -48,6 +53,11 @@ const CONFUSABLE_CODE_POINTS: Record<number, { looksLike: string; script: string
   0x03a7: { looksLike: "X", script: "Greek" },
   0x03bf: { looksLike: "o", script: "Greek" },
   0x03c1: { looksLike: "p", script: "Greek" },
+  0x03b9: { looksLike: "i", script: "Greek" },
+  0x03ba: { looksLike: "k", script: "Greek" },
+  0x03bd: { looksLike: "v", script: "Greek" },
+  0x03c5: { looksLike: "u", script: "Greek" },
+  0x03c7: { looksLike: "x", script: "Greek" },
 };
 
 export function detectConfusables(text: string): Finding[] {
