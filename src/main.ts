@@ -80,7 +80,20 @@ function runScan(): ScanResult {
   return result;
 }
 
-inputArea.addEventListener("input", runScan);
+// Coalesce to one scan per animation frame: key-mashing or a fast paste can
+// fire several "input" events faster than a single scan+render can complete,
+// and running each one synchronously would only compound the backlog.
+let scanScheduled = false;
+function scheduleScan(): void {
+  if (scanScheduled) return;
+  scanScheduled = true;
+  requestAnimationFrame(() => {
+    scanScheduled = false;
+    runScan();
+  });
+}
+
+inputArea.addEventListener("input", scheduleScan);
 inputArea.addEventListener("scroll", syncOverlayScroll);
 window.addEventListener("resize", syncOverlayScroll);
 
