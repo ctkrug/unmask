@@ -5,8 +5,10 @@
   --text: #ede9fb;
   --text-muted: #948aad;
   --accent: #a742ff;
+  --accent-text: #c17dff; /* lightened --accent: readable as body text on --surface-2 (WCAG AA) */
   --ink: #6dffb8;
   --danger: #ff3d71;
+  --danger-text: #ff7096; /* lightened --danger: readable as body text over tinted danger surfaces (WCAG AA) */
   --success: #39e6c8;
 
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
@@ -265,13 +267,13 @@ body {
 }
 
 .finding--tag-character {
-  color: var(--accent);
+  color: var(--accent-text);
   text-shadow: 0 0 8px rgba(167, 66, 255, 0.6);
 }
 
 .finding--bidi-control,
 .finding--confusable {
-  color: var(--danger);
+  color: var(--danger-text);
   text-shadow: 0 0 8px rgba(255, 61, 113, 0.6);
 }
 
@@ -335,7 +337,7 @@ body {
 }
 
 .mark--confusable {
-  color: var(--danger);
+  color: var(--danger-text);
   background: rgba(255, 61, 113, 0.25);
   text-shadow: 0 0 6px rgba(255, 61, 113, 0.6);
   border-radius: 2px;
